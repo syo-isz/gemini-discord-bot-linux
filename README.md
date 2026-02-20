@@ -1,4 +1,4 @@
-# Gemini-Tmux Discord Bridge 🚀 (※好きな名前に変えてね)
+# gemini-discord-bot-linux
 
 Gemini CLI を Discord から快適・安全・スタイリッシュに操作するためのプライベートブリッジツールです。
 公式APIを使用せず、 **裏で稼働する `tmux` セッションの標準出力をリアルタイムにパージしてDiscordに流し込む**という、少し強引でハッカーライクなアプローチを採用しています。
