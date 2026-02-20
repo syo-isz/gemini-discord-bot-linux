@@ -1,0 +1,7 @@
+# .gitignore
+.env
+bot_venv/
+__pycache__/
+*.pyc
+bot.pid
+.last_session
