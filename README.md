@@ -114,8 +114,128 @@ Gemini 本体のコマンド（`/help` や `/reset` など）を呼び出す際�
 このツールは Gemini CLI の標準出力（ターミナル UI）を正規表現で解析しています。そのため、Google 側が Gemini CLI のプロンプト記号（`*` や `✦`）やレイアウト仕様を変更した場合、出力のパースが崩れる、あるいは Bot が正常に応答しなくなる可能性があります。
 あくまで個人用のハックツールとしてご利用ください。
 
+---
+
 ## 📜 ライセンス (License)
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+---
+
+# Gemini-Tmux Discord Bridge 🚀 (English Version)
+
+A private bridge tool designed to operate Gemini CLI comfortably, safely, and stylishly from Discord.
+Instead of using official APIs, it employs a "hacker-like" approach by **parsing the standard output of a background `tmux` session in real-time and streaming it to Discord**.
+
+The standout feature is its **real-time streaming (Message Edit)**, which provides live updates every 2 seconds as Gemini thinks, executes tools, and writes its response.
+
+---
+
+## 🌟 Key Features
+
+1.  **Real-time Streaming**
+    *   Scans Gemini output every 2 seconds and dynamically updates Discord messages.
+    *   Experience the live process of "Thinking" and "Generation" line by line.
+2.  **Clean & Smart Parsing Engine**
+    *   Automatically strips Gemini CLI-specific borders and UI noise (e.g., `╭╮╯╰`) using regex.
+    *   Intelligently distinguishes between tool execution logs (code blocks) and Gemini's answers (starting with ✦).
+    *   Optimized to immediately close code blocks and transition to normal text once tool execution finishes.
+3.  **Owner-Only Security Shield**
+    *   Ignores all messages and commands from anyone other than the Discord ID specified in your `.env`.
+    *   Safe to operate as your private AI assistant in DMs or public servers.
+4.  **Topic-Based Session Management**
+    *   Isolates Gemini's memory/processes by switching between different `tmux` sessions.
+    *   Automatically restores the last used session even after a service restart.
+
+---
+
+## 🛠 Prerequisites
+
+- **OS**: Linux (Ubuntu 22.04 / 24.04 recommended)
+- **Dependencies**: `tmux`, `Node.js (v24+)`, `Python 3.12+`, `systemd`
+
+---
+
+## 🚀 Setup Guide (3 Steps)
+
+### 1. Preparation & Installation
+Run these commands in the cloned repository directory:
+```bash
+python -m venv bot_venv
+source bot_venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 2. Configuration (.env)
+Copy `.env.example` to `.env` and fill in the following fields.
+⚠️ **Caution**: The `.env` file contains sensitive information. Never commit it to a public repository.
+
+```ini
+DISCORD_TOKEN=Your_Bot_Token
+DISCORD_CHANNEL_ID=Target_Channel_ID
+MY_DISCORD_ID=Your_Discord_User_ID (18-digit number)
+GEMINI_EXECUTABLE_PATH=gemini
+```
+> 💡 **How to find your ID**: Enable "Developer Mode" in Discord Settings > Advanced, right-click your profile icon, and select "Copy User ID".
+
+### 3. Service Backgrounding (systemd)
+Save the following to `~/.config/systemd/user/gemini-bot.service` (create the directory if it doesn't exist).
+*Note: Be sure to update `WorkingDirectory` and `ExecStart` with your absolute paths.*
+
+```ini
+[Unit]
+Description=Gemini Discord Bot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ubuntu/gemini-discord-bot
+ExecStart=/home/ubuntu/gemini-discord-bot/start.sh
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+```
+
+Enable and start the service:
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now gemini-bot.service
+```
+
+---
+
+## 🎮 Commands
+
+### 💡 Sending Commands to Gemini CLI
+To call internal Gemini CLI commands (like `/help` or `/reset`), prefix your message with `cmd` or use the slash command. The `/` prefix is added automatically.
+
+- **Chat Input**: `cmd help`, `cmd reset`, `cmd file example.md`
+- **Slash Command**: `/cmd reset` etc.
+
+### ⚙️ Bot Management (Slash Commands)
+Use these to manage the bot's state and sessions.
+
+- `/status`: Check current target tmux session information.
+- `/sessions`: List all active tmux sessions.
+- `/session [name]`: Switch the target session.
+- `/session_new [name]`: Create a new session and launch Gemini CLI.
+- `/session_kill [name]`: Terminate a specific session.
+
+---
+
+## 📂 File Structure
+
+- `main.py`: Core bot logic (Real-time extraction & parsing).
+- `start.sh`: Tmux preparation, PID management, and startup script.
+- `README.md`: This documentation.
+- `.last_session`: Persistence file to track the last used session.
+
+---
+
+## ⚠️ Disclaimer (Known Issues)
+This tool parses the standard output (Terminal UI) of Gemini CLI using regular expressions. If Google changes the prompt symbols (`*` or `✦`) or layout specifications, parsing may fail or the bot may become unresponsive. This is intended as a personal-use hack tool.
 
 ---
 Designed with ❤️ by Gemini CLI (YOLO Mode)
